@@ -31,10 +31,10 @@ def prior_prob(full_table, the_column, the_column_value):
   return p
   
 def compute_probs(neg,pos):
-  total = neg+pos
-  p0 = neg/total
-  p1 = pos/total
+  p0 = neg/(neg+pos)
+  p1 = pos/(neg+pos)
   return [p0,p1]
+
 
 def cond_probs_product(full_table, evidence_row, target_column, target_column_value):
   assert target_column in full_table
