@@ -29,6 +29,12 @@ def prior_prob(full_table, the_column, the_column_value):
   t_list = up_get_column(full_table, the_column)
   p = sum([1 if v==the_column_value else 0 for v in t_list])/len(t_list)
   return p
+  
+def compute_probs(neg,pos):
+  total = neg+pos
+  p0 = neg/total
+  p1 = pos/total
+  return [p0,p1]
 
 def cond_probs_product(full_table, evidence_row, target_column, target_column_value):
   assert target_column in full_table
