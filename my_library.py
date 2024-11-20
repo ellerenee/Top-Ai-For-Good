@@ -1,26 +1,6 @@
 def test_load():
   return 'loaded'
 
-def naive_bayes(full_table, evidence_row, target_column):
-  assert target_column in full_table
-  assert isinstance(evidence_row, list)
-  assert len(evidence_row) == len(up_list_column_names(full_table)) - 1   # - 1 because subtracting off the target
-
-  #compute P(target=0|...) by using cond_probs_product, finally multiply by P(target=0) using prior_prob
-  target_val = 0
-  neg1 = cond_probs_product(full_table, evidence_row, target_column, target_val)
-  neg2=neg1*prior_prob(full_table, target_column, target_val)
-
-  #do same for P(target=1|...)
-  target_val = 1
-  pos1 = cond_probs_product(full_table, evidence_row, target_column, target_val)
-  pos2=pos1*prior_prob(full_table, target_column, target_val)
-
-  #Use compute_probs to get 2 probabilities
-  negative, positive = compute_probs(neg2,pos2)
-  #return your 2 results in a list
-  return [negative, positive]
-
 def prior_prob(full_table, the_column, the_column_value):
   assert the_column in full_table
   assert the_column_value in up_get_column(full_table, the_column)
@@ -61,4 +41,24 @@ def cond_prob(full_table, the_evidence_column, the_evidence_column_value, the_ta
   e_list = up_get_column(t_subset, the_evidence_column)
   p_b_a = sum([1 if v==the_evidence_column_value else 0 for v in e_list])/len(e_list)
   return p_b_a
+  
+def naive_bayes(full_table, evidence_row, target_column):
+  assert target_column in full_table
+  assert isinstance(evidence_row, list)
+  assert len(evidence_row) == len(up_list_column_names(full_table)) - 1   # - 1 because subtracting off the target
+
+  #compute P(target=0|...) by using cond_probs_product, finally multiply by P(target=0) using prior_prob
+  target_val = 0
+  neg1 = cond_probs_product(full_table, evidence_row, target_column, target_val)
+  neg2=neg1*prior_prob(full_table, target_column, target_val)
+
+  #do same for P(target=1|...)
+  target_val = 1
+  pos1 = cond_probs_product(full_table, evidence_row, target_column, target_val)
+  pos2=pos1*prior_prob(full_table, target_column, target_val)
+
+  #Use compute_probs to get 2 probabilities
+  negative, positive = compute_probs(neg2,pos2)
+  #return your 2 results in a list
+  return [negative, positive]
 
