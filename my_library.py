@@ -62,3 +62,32 @@ def naive_bayes(full_table, evidence_row, target_column):
   #return your 2 results in a list
   return [negative, positive]
 
+def metrics(zipped_list):
+  assert isinstance(zipped_list, list)
+  assert all([isinstance(v, list) for v in zipped_list])
+  assert all([len(v)==2 for v in zipped_list])
+  assert all([isinstance(a,(int,float)) and isinstance(b,(int,float)) for a,b in zipped_list]), f'zipped_list contains a non-int or non-float'
+  assert all([float(a) in [0.0,1.0] and float(b) in [0.0,1.0] for a,b in zipped_list]), f'zipped_list contains a non-binary value'
+
+  #first compute the sum of all 4 cases. See code above
+  sum_tp = sum([1 if pair==[1,1] else 0 for pair in zipped_list])
+  sum_tn = sum([1 if pair==[0,0] else 0 for pair in zipped_list])
+  sum_fp = sum([1 if pair==[1,0] else 0 for pair in zipped_list])
+  sum_fn = sum([1 if pair==[0,1] else 0 for pair in zipped_list])
+
+  #now can compute precicision, recall, f1, accuracy. Watch for divide by 0.
+  precision = sum_tp/(sum_tp+sum_fp) if sum_tp+sum_fp else 0
+  recall = sum_tp/(sum_tp+sum_fn) if sum_tp+sum_fn else 0
+  f1_score_1 = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+  accuracy = (sum_tp+sum_tn)/(sum_tp+sum_tn+sum_fp+sum_fn)
+
+  #now build dictionary with the 4 measures - round values to 2 places
+  metrics_dict = {
+  'Precision' : round(precision, 2),
+  'Recall' : round(recall, 2),
+  'F1' : round(f1_score_1, 2),
+  'Accuracy' : round(accuracy, 2)}
+
+  #finally, return the dictionary
+  return metrics_dict
+
