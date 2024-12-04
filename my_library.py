@@ -121,7 +121,10 @@ def run_random_forest(train, test, target, n):
 
   return metrics_table
 
+
+
 pima_train, pima_test = up_train_test_split(wrangled_pima, 'Outcome', .4)
-up_write_table(pima_train, 'pima_train.csv')  #then move over to github to get url
-up_write_table(pima_test, 'pima_test.csv')  #then move over to github to get url
+
+up_write_table(pima_train, 'pima_train.csv')  
+up_write_table(pima_test, 'pima_test.csv')  
 
