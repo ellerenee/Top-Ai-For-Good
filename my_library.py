@@ -128,3 +128,62 @@ pima_train, pima_test = up_train_test_split(wrangled_pima, 'Outcome', .4)
 up_write_table(pima_train, 'pima_train.csv')  
 up_write_table(pima_test, 'pima_test.csv')  
 
+
+def try_archs(train_table, test_table, target_column_name, architectures, thresholds):
+  arch_acc_dict = {}  #ignore if not attempting extra credit
+
+  #now loop through architectures
+  for arch in architectures:
+    probs = up_neural_net(train_table, test_table, arch, target_column_name)
+    pos_probs = [pos for neg,pos in probs]
+
+    all_mets = []
+    for t in thresholds:
+      predictions = [1 if pos>=t else 0 for pos in pos_probs]
+      pred_act_list = up_zip_lists(predictions, up_get_column(test_table, target_column_name))
+      mets = metrics(pred_act_list)
+      mets['Threshold'] = t
+      all_mets = all_mets + [mets]
+
+
+    #loop through thresholds
+
+    arch_acc_dict[tuple(arch)] = max([metd['Accuracy'] for metd in all_mets])
+
+
+
+    print(f'Architecture: {arch}')
+    display(up_metrics_table(all_mets))
+
+  return arch_acc_dict
+
+from sklearn.ensemble import RandomForestClassifier
+
+def run_random_forest(train, test, target, n):
+  #target is target column name
+  #n is number of trees to use
+
+  assert target in train   #have not dropped it yet
+  assert target in test
+
+  #your code below - copy, paste and align from above
+  X = up_drop_column(train, target)
+  y = up_get_column(train,target)
+
+  clf = RandomForestClassifier(n_estimators=n, max_depth=2, random_state=0)
+  clf.fit(X, y)
+
+  probs = clf.predict_proba(up_drop_column(test, target))
+  pos_probs = [p for n,p in probs]
+
+  all_mets = []
+  for t in thresholds:
+    predictions = [1 if pos>t else 0 for pos in pos_probs]
+    pred_act_list = up_zip_lists(predictions, up_get_column(test, target))
+    mets = metrics(pred_act_list)
+    mets['Threshold'] = t
+    all_mets = all_mets + [mets]
+
+  metrics_table = up_metrics_table(all_mets)
+
+  return metrics_table
