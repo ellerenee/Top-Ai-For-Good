@@ -69,26 +69,22 @@ def metrics(zipped_list):
   assert all([isinstance(a,(int,float)) and isinstance(b,(int,float)) for a,b in zipped_list]), f'zipped_list contains a non-int or non-float'
   assert all([float(a) in [0.0,1.0] and float(b) in [0.0,1.0] for a,b in zipped_list]), f'zipped_list contains a non-binary value'
 
-  #first compute the sum of all 4 cases. See code above
   sum_tp = sum([1 if pair==[1,1] else 0 for pair in zipped_list])
   sum_tn = sum([1 if pair==[0,0] else 0 for pair in zipped_list])
   sum_fp = sum([1 if pair==[1,0] else 0 for pair in zipped_list])
   sum_fn = sum([1 if pair==[0,1] else 0 for pair in zipped_list])
 
-  #now can compute precicision, recall, f1, accuracy. Watch for divide by 0.
   precision = sum_tp/(sum_tp+sum_fp) if sum_tp+sum_fp else 0
   recall = sum_tp/(sum_tp+sum_fn) if sum_tp+sum_fn else 0
   f1_score_1 = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
   accuracy = (sum_tp+sum_tn)/(sum_tp+sum_tn+sum_fp+sum_fn)
 
-  #now build dictionary with the 4 measures - round values to 2 places
   metrics_dict = {
   'Precision' : round(precision, 2),
   'Recall' : round(recall, 2),
   'F1' : round(f1_score_1, 2),
   'Accuracy' : round(accuracy, 2)}
 
-  #finally, return the dictionary
   return metrics_dict
 
 
@@ -99,7 +95,6 @@ def run_random_forest(train, test, target, n):
   assert target in train   #have not dropped it yet
   assert target in test
 
-  #your code below - copy, paste and align from above
   X = up_drop_column(train, target)
   y = up_get_column(train,target)
  
@@ -146,16 +141,13 @@ def try_archs(train_table, test_table, target_column_name, architectures, thresh
       all_mets = all_mets + [mets]
 
 
-    #loop through thresholds
-
     arch_acc_dict[tuple(arch)] = max([metd['Accuracy'] for metd in all_mets])
-
-
 
     print(f'Architecture: {arch}')
     display(up_metrics_table(all_mets))
 
   return arch_acc_dict
+
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -187,3 +179,52 @@ def run_random_forest(train, test, target, n):
   metrics_table = up_metrics_table(all_mets)
 
   return metrics_table
+
+def feed_forward(net_weights, inputs):
+  # slide left to right
+  for layer in net_weights:
+    output = [node(inputs, node_weights) for node_weights in layer]
+    inputs = output  #the trick - make input the output of previous layer
+  result = output[0]
+
+  return result
+  
+def generate_random(n):
+  random_weights = [round(uniform(-1, 1), 2) for i in range(n)]
+  return random_weights
+
+def node(inputs, weights):
+  assert isinstance(inputs,list)
+  assert isinstance(weights, list)
+  assert len(inputs)==len(weights)
+
+  zipped = up_zip_lists(inputs,weights)
+  z = sum([x*y for x,y in zipped])  #dot product
+  s = sigmoid(z)  #value between 0 and 1 - will treat as the "pos" probability
+  return s
+
+def try_archs(train_table, test_table, target_column_name, architectures, thresholds):
+  arch_acc_dict = {}  #ignore if not attempting extra credit
+
+  #now loop through architectures
+  for arch in architectures:
+    probs = up_neural_net(train_table, test_table, arch, target_column_name)
+    pos_probs = [pos for neg,pos in probs]
+
+    all_mets = []
+    for t in thresholds:
+      predictions = [1 if pos>=t else 0 for pos in pos_probs]
+      pred_act_list = up_zip_lists(predictions, up_get_column(test_table, target_column_name))
+      mets = metrics(pred_act_list)
+      mets['Threshold'] = t
+      all_mets = all_mets + [mets]
+
+
+    #loop through thresholds
+
+    arch_acc_dict[tuple(arch)] = max([metd['Accuracy'] for metd in all_mets])
+
+    print(f'Architecture: {arch}')
+    display(up_metrics_table(all_mets))
+
+  return arch_acc_dict
