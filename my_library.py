@@ -212,8 +212,7 @@ def try_archs(train_table, test_table, target_column_name, architectures, thresh
       all_mets = all_mets + [mets]
 
     arch_acc_dict[tuple(arch)] = max([metd['Accuracy'] for metd in all_mets])
-
+    
     print(f'Architecture: {arch}')
     display(up_metrics_table(all_mets))
-    
     return arch_acc_dict
