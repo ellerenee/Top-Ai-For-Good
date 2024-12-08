@@ -116,7 +116,16 @@ def run_random_forest(train, test, target, n):
 
   return metrics_table
 
+url ='https://docs.google.com/spreadsheets/d/e/2PACX-1vRWSIvVM7Nk-NsF2XSqibHxzypZkhP9nf9DFnSmQX9PJXzZfMpMLqqKvO70NqiA7mstFTXvpwXdWrrX/pub?output=csv'
+pima_table = up_get_table(url)
+pima_table
 
+wrangled_pima = up_drop_column(pima_table, 'Insulin')
+wrangle_table2 = up_drop_nan_rows(wrangled_pima)
+
+pima_table_3=up_map_column(wrangle_table2, 'Region', {'A': 0, 'B': 1, 'C': 2, 'D':3})
+pima_table_2=up_map_column(pima_table_3,'BloodPressure', {'low': 0, 'medium': 1, 'high': 2})
+wrangled_pima1=pima_table_2
 
 pima_train, pima_test = up_train_test_split(wrangled_pima, 'Outcome', .4)
 
