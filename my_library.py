@@ -195,10 +195,10 @@ def node(inputs, weights):
   s = sigmoid(z)  #value between 0 and 1 - will treat as the "pos" probability
   return s
 
-def try_archs(train_table, test_table, target_column_name, architectures, thresholds):
-  arch_acc_dict = {}  #ignore if not attempting extra credit
 
-  #now loop through architectures
+def try_archs(train_table, test_table, target_column_name, architectures, thresholds):
+  arch_acc_dict = {}  
+
   for arch in architectures:
     probs = up_neural_net(train_table, test_table, arch, target_column_name)
     pos_probs = [pos for neg,pos in probs]
@@ -215,4 +215,5 @@ def try_archs(train_table, test_table, target_column_name, architectures, thresh
 
     print(f'Architecture: {arch}')
     display(up_metrics_table(all_mets))
-return arch_acc_dict
+    
+    return arch_acc_dict
