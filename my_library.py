@@ -116,12 +116,6 @@ def run_random_forest(train, test, target, n):
 
   return metrics_table
 
-pima_train, pima_test = up_train_test_split(wrangled_pima, 'Outcome', .4)
-
-up_write_table(pima_train, 'pima_train.csv')  
-up_write_table(pima_test, 'pima_test.csv')  
-
-
 def try_archs(train_table, test_table, target_column_name, architectures, thresholds):
   arch_acc_dict = {}  #ignore if not attempting extra credit
 
